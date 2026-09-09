@@ -2,8 +2,6 @@
 
 This repository demonstrates a basic CI/CD setup using Jenkins, GitHub, and a simple shell-based “application”.
 
-- **Author:** Nisha Subramaniyan  
-- **Location:** Salem, Tamil Nadu, India  
 - **Tech Stack:** Ubuntu (WSL), Jenkins, Git, GitHub, Bash
 
 ---
@@ -94,7 +92,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 #### Freestyle Job: `freestyle-github-build`
 
 - **Source Code Management:** Git  
-  - Repository URL: `https://github.com/YOUR_USERNAME/jenkins-ci-demo.git`
+  - Repository URL: `https://github.com/nisha-subramaniyan/jenkins-ci-demo.git`
   - Branch: `*/main`
 - **Build Triggers:** GitHub hook trigger for GITScm polling
 - **Build Step:** Execute shell
@@ -109,7 +107,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 - **Definition:** Pipeline script from SCM
 - **SCM:** Git
-  - Repository URL: `https://github.com/YOUR_USERNAME/jenkins-ci-demo.git`
+  - Repository URL: `https://github.com/nisha-subramaniyan/jenkins-ci-demo.git`
   - Script Path: `Jenkinsfile`
 
 ---
@@ -214,7 +212,7 @@ For the assignment, the following are submitted separately:
 - **GitHub Repository Link:**  
   `https://github.com/YOUR_USERNAME/jenkins-ci-demo`
 - **PDF Report:**  
-  `Nisha_Subramaniyan_Jenkins_CICD_Report.pdf`  
+  `Week5_Jenkins.pdf`  
   (Covers CI/CD, Jenkins architecture, Freestyle jobs, Declarative pipelines, Jenkinsfile, GitHub webhooks, credentials, and pipeline stages.)
 - **Screenshots:**
   - Jenkins Dashboard
