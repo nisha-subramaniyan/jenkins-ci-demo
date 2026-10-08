@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 mkdir -p public
-echo "jenkins-ci-demo version 2" > public/index.html
 
-echo "Application listening on port 8080"
-busybox-extras httpd -f -p 0.0.0.0:8080 -h public
+echo "jenkins-ci-demo version 3 - BROKEN" > public/index.html
+
+echo "Application startup failed intentionally"
+
+exit 1
