@@ -2,8 +2,8 @@
 
 mkdir -p public
 
-echo "jenkins-ci-demo version 3 - BROKEN" > public/index.html
+echo "jenkins-ci-demo version 4" > public/index.html
 
-echo "Application startup failed intentionally"
+echo "Starting application on port 8080..."
 
-exit 1
+python3 -m http.server 8080 --directory public
