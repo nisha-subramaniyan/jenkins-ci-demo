@@ -1,13 +1,18 @@
+
 FROM alpine:3.20
 
-RUN apk add --no-cache bash busybox-extras
+RUN apk add --no-cache bash busybox-extras \
+    && addgroup -S app \
+    && adduser -S -G app app
 
 WORKDIR /app
 
-COPY app.sh .
-COPY README.md .
+COPY --chown=app:app app.sh .
+COPY --chown=app:app README.md .
 
-RUN chmod +x app.sh
+RUN chmod 0555 app.sh
+
+USER app
 
 EXPOSE 8080
 

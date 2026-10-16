@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "jenkins-ci-demo"
-        IMAGE_NAME = "jenkins-ci-demo"
-        SERVICE_NAME = "jenkins-ci-demo"
-        DEPLOY_PORT = "8082"
+        APP_NAME = 'jenkins-ci-demo'
+        IMAGE_NAME = 'jenkins-ci-demo'
+        SERVICE_NAME = 'jenkins-ci-demo'
+        DEPLOY_PORT = '8082'
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -45,10 +44,37 @@ pipeline {
             }
         }
 
+        stage('Security Scan') {
+            steps {
+                sh '''
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      -v "$WORKSPACE:/work" \
+                      -v trivy-cache:/root/.cache/ \
+                      aquasec/trivy:latest \
+                      image \
+                      --format json \
+                      --output /work/trivy-report.json \
+                      --severity HIGH,CRITICAL \
+                      --ignore-unfixed \
+                      ${IMAGE_NAME}:${BUILD_NUMBER}
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts(
+                        artifacts: 'trivy-report.json',
+                        allowEmptyArchive: true
+                    )
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 sh '''
-                    if ! docker service ls --format '{{.Name}}' | grep -q "^${SERVICE_NAME}$"; then
+                    if ! docker service ls --format '{{.Name}}' \
+                        | grep -q "^${SERVICE_NAME}$"; then
                         docker service create \
                           --name ${SERVICE_NAME} \
                           --replicas 2 \
@@ -64,6 +90,7 @@ pipeline {
                           --update-parallelism 1 \
                           --update-delay 5s \
                           --update-order start-first \
+                          --update-failure-action rollback \
                           ${SERVICE_NAME}
                     fi
                 '''
@@ -76,9 +103,8 @@ pipeline {
                     sleep 10
                     docker service ls
                     docker service ps ${SERVICE_NAME}
-
-                    curl --fail http://localhost:${DEPLOY_PORT}
-
+                    curl --fail --show-error \
+                      http://localhost:${DEPLOY_PORT}
                     echo "Deployment verification successful"
                 '''
             }
@@ -86,12 +112,18 @@ pipeline {
     }
 
     post {
+        always {
+            archiveArtifacts(
+                artifacts: 'trivy-report.json',
+                allowEmptyArchive: true
+            )
+        }
         success {
             echo 'CI/CD pipeline completed successfully.'
         }
-
         failure {
-            echo 'Pipeline failed. Investigate deployment and rollback if required.'
+            echo 'Pipeline failed. Investigate the failed stage.'
         }
     }
 }
+
